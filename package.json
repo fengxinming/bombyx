@@ -1,0 +1,55 @@
+{
+  "name": "ysl",
+  "version": "1.0.0",
+  "description": "前端开发环境补充",
+  "main": "./index.mjs",
+  "module": "./index.mjs",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./index.mjs"
+    }
+  },
+  "bin": {
+    "ysl": "bin/index.mjs"
+  },
+  "engines": {
+    "node": ">=14.18.0",
+    "node-dev": ">=18"
+  },
+  "scripts": {
+    "deps": "npm run clean && npm i",
+    "clean": "rm -rf node_modules",
+    "eslint": "eslint --ext .js,.mjs,.jsx --fix --ignore-path .eslintignore ./",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "execa": "^7.2.0",
+    "figlet": "^1.7.0",
+    "kleur": "^4.1.5",
+    "lodash-es": "^4.17.21",
+    "ora": "^6.3.1",
+    "prompts": "^2.4.2",
+    "semver": "^7.5.4",
+    "tslib": "^2.6.2",
+    "undici": "^5.27.2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.2.0",
+    "@commitlint/config-conventional": "^19.1.0",
+    "eslint": "^8.57.0",
+    "eslint-config-fe": "^2.1.2",
+    "fe": "^2.0.27",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.2"
+  },
+  "files": [
+    "bin",
+    "src",
+    "config",
+    "types",
+    "index.mjs"
+  ]
+}
