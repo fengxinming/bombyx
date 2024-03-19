@@ -21,8 +21,8 @@ function helpCallback(sections) {
 }
 
 // 大标题
-banner(yslPkg.name.slice(5), {
-  font: 'ANSI Shadow',
+banner('welcome !', {
+  font: 'ANSI Shadow'
 });
 
 // 创建命令终端

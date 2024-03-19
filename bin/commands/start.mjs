@@ -41,10 +41,10 @@ async function complete(root, { eslint, husky, build } = {}) {
             message: '选择需要添加的功能: ',
             choices: [
               { title: eslintTitle, value: 'eslint' },
-              { title: huskyTitle, value: 'husky' },
+              { title: huskyTitle, value: 'husky' }
             ],
             min: 1,
-            hint: '- 手动选择以下配置项',
+            hint: '- 手动选择以下配置项'
           },
           {
             type(prev) {
@@ -55,15 +55,15 @@ async function complete(root, { eslint, husky, build } = {}) {
             message: '选择额外的 Eslint 配置: ',
             choices: [
               { title: eslintTsTitle, value: 'ts' },
-              { title: eslintReactTitle, value: 'react' },
+              { title: eslintReactTitle, value: 'react' }
             ],
-            hint: '- 非必要配置可不选',
-          },
+            hint: '- 非必要配置可不选'
+          }
         ],
         {
           onCancel() {
             throw new Error(`${kleur.red(figures.cross)} 操作被取消.`);
-          },
+          }
         }
       );
 
@@ -92,7 +92,8 @@ async function complete(root, { eslint, husky, build } = {}) {
           }
         });
       }
-    } catch (cancelled) {
+    }
+    catch (cancelled) {
       console.error(cancelled.message);
       process.exit(1);
     }
@@ -106,21 +107,24 @@ async function complete(root, { eslint, husky, build } = {}) {
       cwd,
       eslint,
       husky,
-      build,
+      build
     });
 
     if (res.length) {
       res.forEach(({ value, reason }) => {
         if (value) {
           spinner.done(value);
-        } else if (reason) {
+        }
+        else if (reason) {
           spinner.fail(reason);
         }
       });
-    } else {
+    }
+    else {
       spinner.fail('配置开发环境失败.');
     }
-  } catch (e) {
+  }
+  catch (e) {
     spinner.fail('配置开发环境中断.');
     throw e;
   }

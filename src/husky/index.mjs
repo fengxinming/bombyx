@@ -1,5 +1,6 @@
-import { readFile, unlink } from 'node:fs/promises';
+import { readFile, unlink, writeFile, appendFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { existsSync } from 'node:fs';
 import doLintStaged from './lint-staged.mjs';
 import doCommitlint from './commitlint.mjs';
 import {
@@ -18,15 +19,20 @@ function checkVersion(version) {
 }
 
 async function addCommitHook(cwd, filePath, content) {
-  try {
-    const preCommit = await readFile(join(cwd, filePath), 'utf-8');
-    if (preCommit.includes(content)) {
-      return;
+  const hookFilePath = join(cwd, filePath);
+  if (existsSync(hookFilePath)) {
+    try {
+      const preCommit = await readFile(hookFilePath, 'utf-8');
+      if (preCommit.includes(content)) {
+        return;
+      }
     }
+    catch (e) {}
+    return appendFile(filePath, content, 'utf-8');
   }
-  catch (e) {}
 
-  return runNpmPkg(['husky', 'add', filePath, content]);
+  return writeFile(filePath, content, 'utf-8');
+
 }
 
 /**
@@ -80,7 +86,7 @@ export default async function doHusky(params) {
     });
   });
 
-  await runNpmPkg(['husky', 'install']);
+  await runNpmPkg(['husky']);
   addCommitHook(cwd, '.husky/pre-commit', 'npx --no-install -- lint-staged');
   addCommitHook(
     cwd,
