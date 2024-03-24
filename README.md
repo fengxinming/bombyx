@@ -1,22 +1,22 @@
-# silkworm
+# bombyx
 
-[![npm package](https://nodei.co/npm/silkworm.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/silkworm)
+[![npm package](https://nodei.co/npm/bombyx.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/bombyx)
 
 > 前端开发环境补充。
 
-[![NPM version](https://img.shields.io/npm/v/silkworm.svg?style=flat)](https://npmjs.org/package/silkworm)
-[![NPM Downloads](https://img.shields.io/npm/dm/silkworm.svg?style=flat)](https://npmjs.org/package/silkworm)
+[![NPM version](https://img.shields.io/npm/v/bombyx.svg?style=flat)](https://npmjs.org/package/bombyx)
+[![NPM Downloads](https://img.shields.io/npm/dm/bombyx.svg?style=flat)](https://npmjs.org/package/bombyx)
 
 ## 安装
 
 ```bash
-$ npm install -g silkworm
+$ npm install -g bombyx
 ```
 
 ## 使用
 
 ```bash
-$ silkworm
+$ bombyx
                                                       
 
 ? 选择需要添加的功能:  › - 手动选择以下配置项 

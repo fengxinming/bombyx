@@ -24,8 +24,13 @@ const configFiles = [
 function makeEslintrc(cwd, opts) {
   const eslintConfig = {
     extends: ['fe'],
+    plugins: ['simple-import-sort'],
     globals: {
       __DEV__: true
+    },
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error'
     }
   };
 
@@ -91,7 +96,7 @@ export default async function doEslint(
     return;
   }
 
-  const pkgs = ['fe'];
+  const pkgs = ['eslint-config-fe', 'eslint-plugin-simple-import-sort'];
   if (opts.react) {
     pkgs.push(
       'eslint-plugin-react',

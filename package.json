@@ -1,6 +1,6 @@
 {
   "name": "bombyx",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "前端开发环境补充",
   "main": "./index.mjs",
   "module": "./index.mjs",
@@ -51,5 +51,20 @@
     "config",
     "types",
     "index.mjs"
-  ]
+  ],
+  "keywords": [
+    "dev",
+    "env",
+    "cli"
+  ],
+  "author": "Jesse <fxm0016@126.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fengxinming/bombyx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fengxinming/bombyx/issues"
+  },
+  "homepage": "https://github.com/fengxinming/bombyx#readme"
 }

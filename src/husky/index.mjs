@@ -15,7 +15,7 @@ const configFiles = ['.huskyrc', '.huskyrc.json'];
 
 function checkVersion(version) {
   const major = /^(?:\^|~)?([0-9]+)/.exec(version);
-  return (major && +major[1] >= 8) || version === 'latest';
+  return (major && +major[1] >= 9) || version === 'latest';
 }
 
 async function addCommitHook(cwd, filePath, content) {
@@ -87,14 +87,17 @@ export default async function doHusky(params) {
   });
 
   await runNpmPkg(['husky']);
-  addCommitHook(cwd, '.husky/pre-commit', 'npx --no-install -- lint-staged');
-  addCommitHook(
-    cwd,
-    '.husky/commit-msg',
-    'npx --no-install -- commitlint --edit $1'
-  );
 
-  return Promise.all([doLintStaged(params), doCommitlint(params)]).then(() => {
+  return Promise.all([
+    addCommitHook(cwd, '.husky/pre-commit', 'npx --no-install -- lint-staged'),
+    addCommitHook(
+      cwd,
+      '.husky/commit-msg',
+      'npx --no-install -- commitlint --edit $1'
+    ),
+    doLintStaged(params),
+    doCommitlint(params)
+  ]).then(() => {
     record.success('配置 husky 完成.');
   });
 }
