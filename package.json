@@ -1,5 +1,5 @@
 {
-  "name": "silkworm",
+  "name": "bombyx",
   "version": "1.0.0",
   "description": "前端开发环境补充",
   "main": "./index.mjs",
@@ -12,7 +12,7 @@
     }
   },
   "bin": {
-    "silkworm": "bin/index.mjs"
+    "bombyx": "bin/index.mjs"
   },
   "engines": {
     "node": ">=14.18.0",
