@@ -1,5 +1,5 @@
 {
-  "name": "ysl",
+  "name": "silkworm",
   "version": "1.0.0",
   "description": "前端开发环境补充",
   "main": "./index.mjs",
@@ -12,7 +12,7 @@
     }
   },
   "bin": {
-    "ysl": "bin/index.mjs"
+    "silkworm": "bin/index.mjs"
   },
   "engines": {
     "node": ">=14.18.0",
