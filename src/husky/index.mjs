@@ -89,7 +89,11 @@ export default async function doHusky(params) {
   await runNpmPkg(['husky']);
 
   return Promise.all([
-    addCommitHook(cwd, '.husky/pre-commit', 'npx --no-install -- lint-staged'),
+    addCommitHook(
+      cwd,
+      '.husky/pre-commit',
+      'npx --no-install -- lint-staged'
+    ),
     addCommitHook(
       cwd,
       '.husky/commit-msg',
