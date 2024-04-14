@@ -1,27 +1,19 @@
 import { join } from 'node:path';
+
+import { devDeps, eslintConfigFiles } from '../shared/constants';
+import Context from '../shared/context';
 import {
-  installNpmPkg,
   rootPath,
   updateFile,
   updateObject,
   writeFileFrom
-} from './shared/util.mjs';
-
-const configFiles = [
-  '.eslintrc',
-  '.eslintrc.js',
-  '.eslintrc.cjs',
-  '.eslintrc.yaml',
-  '.eslintrc.yml',
-  '.eslintrc.json'
-];
+} from '../shared/util';
+import { EslintOptions } from '../typings';
 
 /**
- *
- * @param {string} cwd
- * @param {import('../types').eslintOptions} opts
+ * 创建eslint配置文件
  */
-function makeEslintrc(cwd, opts) {
+function makeEslintrc(cwd: string, opts: EslintOptions) {
   const eslintConfig = {
     extends: ['fe'],
     plugins: ['simple-import-sort'],
@@ -46,21 +38,41 @@ function makeEslintrc(cwd, opts) {
 
 /**
  * 配置 eslint
- * @param {import('../types').todoOptions} params
- * @param {import('../types').eslintOptions} opts
- * @returns {Promise<string>}
  */
 export default async function doEslint(
-  { cwd, files, pkg, pkgHooks, record },
-  opts
-) {
-  const { dependencies = {}, devDependencies = {} } = pkg;
+  ctx: Context,
+  next: () => void
+): Promise<void> {
+  const {
+    pkg,
+    files,
+    cwd,
+    opts
+  } = ctx;
+
+  let eslint = opts.eslint;
+  if (!eslint) {
+    return next();
+  }
+
+  if (eslint === true) {
+    eslint = {};
+  }
+
+  const { dependencies = {}, devDependencies = {} } = pkg as Record<string, any>;
   const eslintVersion = dependencies.eslint || devDependencies.eslint;
 
   // 未安装 eslint
   if (!eslintVersion) {
-    await installNpmPkg('eslint');
+    devDependencies.eslint = devDeps.eslint;
   }
+
+  // 在 package.json 中添加 eslint 执行脚本
+  updateObject(pkg, 'scripts.eslint', (eslint) => {
+    return eslint
+      ? null
+      : 'eslint --ext .js,.mjs,.jsx,.ts,.tsx --fix --ignore-path .eslintignore ./';
+  });
 
   // 未配置 eslintignore
   const eslintignore = '.eslintignore';
@@ -71,33 +83,24 @@ export default async function doEslint(
     );
   }
 
-  // 在 package.json 中添加 eslint 执行脚本
-  pkgHooks.push((newPkg) => {
-    updateObject(newPkg, 'scripts.eslint', (eslint) => {
-      return eslint
-        ? null
-        : 'eslint --ext .js,.mjs,.jsx,.ts,.tsx --fix --ignore-path .eslintignore ./';
-    });
-  });
-
-  const eslintConfigFile = files.find((n) => configFiles.includes(n));
+  const eslintConfigFile = files.find((n) => eslintConfigFiles.includes(n));
 
   // 不存在配置
   if (!eslintConfigFile) {
     // 读取 eslintConfig 配置
     const { eslintConfig } = pkg;
     if (eslintConfig) {
-      record.error('在 package.json 中已存在 eslintConfig 配置.');
-      return;
+      ctx.fail('在 package.json 中已存在 eslintConfig 配置.');
+      return next();
     }
   }
   else {
-    record.error(`配置文件 ${eslintConfigFile} 已存在.`);
-    return;
+    ctx.fail(`配置文件 ${eslintConfigFile} 已存在.`);
+    return next();
   }
 
   const pkgs = ['eslint-config-fe', 'eslint-plugin-simple-import-sort'];
-  if (opts.react) {
+  if (eslint.react) {
     pkgs.push(
       'eslint-plugin-react',
       'eslint-plugin-react-hooks',
@@ -106,10 +109,14 @@ export default async function doEslint(
     const reactVersion = dependencies.react || devDependencies.react;
     if (!reactVersion) {
       pkgs.push('react');
+      devDependencies.eslint = devDeps.eslint;
     }
   }
-  await installNpmPkg(pkgs);
-  makeEslintrc(cwd, opts);
+  pkgs.forEach((key) => {
+    devDependencies[key] = devDeps[key];
+  });
+  makeEslintrc(cwd, eslint);
 
-  record.success('配置 eslint 完成.');
+  ctx.done('配置 eslint 完成.');
+  next();
 }

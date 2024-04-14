@@ -1,6 +1,9 @@
-import ora from 'ora';
+import ora, { Ora } from 'ora';
 
 export class Spinner {
+  spinner: Ora;
+  private _lastMsg: string | null;
+
   constructor() {
     this.spinner = ora();
     this._lastMsg = null;

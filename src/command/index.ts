@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 
 import cac from 'cac';
-import banner from '../src/shared/banner.mjs';
-import { yslPkg } from '../src/shared/util.mjs';
-import start from './commands/start.mjs';
 
-/**
- *
- * @param {{title?: string; body: string;}} sections
- */
-function helpCallback(sections) {
+import banner from '../shared/banner';
+import { rootPkg } from '../shared/util';
+import start from './start';
+
+function helpCallback(sections: Array<{title?: string, body: string}>) {
   for (const section of sections) {
     if (section.title === 'Options') {
       section.body = section.body
@@ -30,6 +27,6 @@ const cli = cac();
 
 start(cli);
 
-cli.version(yslPkg.version).help(helpCallback);
+cli.version(rootPkg.version).help(helpCallback);
 
 cli.parse(process.argv);

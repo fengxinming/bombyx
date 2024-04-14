@@ -1,19 +1,23 @@
-import prompts from 'prompts';
+import { EventEmitter } from 'node:events';
+import { existsSync, statSync } from 'node:fs';
 import { isAbsolute, join } from 'node:path';
-import { statSync, existsSync } from 'node:fs';
-import figures from 'prompts/lib/util/figures.js';
-import kleur from 'kleur';
 
-import { ysl } from '../../src/index.mjs';
-import { spinner } from '../../src/shared/spinner.mjs';
-import { instructions } from '../../src/shared/util.mjs';
+import { CAC } from 'cac';
+import kleur from 'kleur';
+import prompts from 'prompts';
+import figures from 'prompts/lib/util/figures.js';
+
+import { bombyx } from '../index';
+import { instructions } from '../shared/constants';
+import { spinner } from '../shared/spinner';
+import { EslintOptions, Options } from '../typings';
 
 const eslintTitle = '添加 eslint 支持';
 const eslintTsTitle = '适配 typescript 相关';
 const eslintReactTitle = '适配 react 相关';
 const huskyTitle = '添加 husky、lint-staged、commitlint 支持';
 
-async function complete(root, { eslint, husky, build } = {}) {
+async function complete(root: string | undefined, { eslint, husky }: Options) {
   let cwd = root || void 0;
   if (cwd) {
     if (!isAbsolute(cwd)) {
@@ -29,7 +33,7 @@ async function complete(root, { eslint, husky, build } = {}) {
     }
   }
 
-  if (eslint === void 0 && husky === void 0 && build === void 0) {
+  if (eslint === void 0 && husky === void 0) {
     try {
       /** @type{{functions: string[], eslintExtra: string[]}} */
       const selection = await prompts(
@@ -84,16 +88,16 @@ async function complete(root, { eslint, husky, build } = {}) {
         eslintExtra.forEach((p) => {
           switch (p) {
             case 'ts':
-              eslint.ts = true;
+              (eslint as EslintOptions).ts = true;
               break;
             case 'react':
-              eslint.react = true;
+              (eslint as EslintOptions).react = true;
               break;
           }
         });
       }
     }
-    catch (cancelled) {
+    catch (cancelled: any) {
       console.error(cancelled.message);
       process.exit(1);
     }
@@ -101,28 +105,25 @@ async function complete(root, { eslint, husky, build } = {}) {
 
   spinner.start('正在配置开发环境...');
 
+  const emitter = new EventEmitter();
+  emitter.on('log', (type, msg) => {
+    switch (type) {
+      case 'done':
+        spinner.done(msg);
+        break;
+      case 'fail':
+        spinner.fail(msg);
+        break;
+    }
+  });
+
   try {
-    /** @type{Promise<{ value?:string; reason?:string }>[]} */
-    const res = await ysl({
+    await bombyx({
       cwd,
       eslint,
       husky,
-      build
+      emitter
     });
-
-    if (res.length) {
-      res.forEach(({ value, reason }) => {
-        if (value) {
-          spinner.done(value);
-        }
-        else if (reason) {
-          spinner.fail(reason);
-        }
-      });
-    }
-    else {
-      spinner.fail('配置开发环境失败.');
-    }
   }
   catch (e) {
     spinner.fail('配置开发环境中断.');
@@ -132,10 +133,8 @@ async function complete(root, { eslint, husky, build } = {}) {
 
 /**
  * 默认执行命令
- *
- * @param {import('cac').CAC} cli
  */
-export default function start(cli) {
+export default function start(cli: CAC) {
   cli
     .command('[dir]', '配置代码环境.')
     .alias('start')

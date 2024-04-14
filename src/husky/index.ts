@@ -1,24 +1,29 @@
-import { readFile, unlink, writeFile, appendFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { existsSync } from 'node:fs';
-import doLintStaged from './lint-staged.mjs';
-import doCommitlint from './commitlint.mjs';
+import { appendFile, readFile, unlink, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
+import { devDeps, huskyConfigFiles } from 'src/shared/constants.js';
+
+import Context from '../shared/context';
 import {
   backupFile,
-  installNpmPkg,
   runNpmPkg,
   updateFile,
   updateObject
-} from '../shared/util.mjs';
+} from '../shared/util';
+import doCommitlint from './commitlint.js';
+import doLintStaged from './lint-staged.js';
 
-const configFiles = ['.huskyrc', '.huskyrc.json'];
-
-function checkVersion(version) {
+function checkVersion(version: string): boolean {
   const major = /^(?:\^|~)?([0-9]+)/.exec(version);
   return (major && +major[1] >= 9) || version === 'latest';
 }
 
-async function addCommitHook(cwd, filePath, content) {
+async function addCommitHook(
+  cwd: string,
+  filePath: string,
+  content: string
+): Promise<void> {
   const hookFilePath = join(cwd, filePath);
   if (existsSync(hookFilePath)) {
     try {
@@ -32,27 +37,38 @@ async function addCommitHook(cwd, filePath, content) {
   }
 
   return writeFile(filePath, content, 'utf-8');
-
 }
 
 /**
  * 配置 husky
- * @param {import('../../types').todoOptions} params
- * @returns {Promise<string>}
  */
-export default async function doHusky(params) {
-  const { cwd, pkg, files, pkgHooks, record } = params;
-  const { dependencies = {}, devDependencies = {} } = pkg;
+export default async function doHusky(
+  ctx: Context,
+  next: () => void
+): Promise<void> {
+  const {
+    pkg,
+    files,
+    cwd,
+    opts
+  } = ctx;
+
+  const husky = opts.husky;
+  if (!husky) {
+    return next();
+  }
+
+  const { dependencies = {}, devDependencies = {} } = pkg as Record<string, any>;
   const huskyVersion = dependencies.husky || devDependencies.husky;
 
   // 未安装 husky
   if (!huskyVersion) {
-    await installNpmPkg('husky');
+    devDependencies.husky = devDeps.husky;
   }
   // 版本过低
   else if (!checkVersion(huskyVersion)) {
     // 备份
-    const huskyrc = files.find((f) => configFiles.includes(f));
+    const huskyrc = files.find((f) => huskyConfigFiles.includes(f));
     if (huskyrc) {
       backupFile(huskyrc, cwd).then(() => {
         return unlink(join(cwd, huskyrc));
@@ -61,32 +77,28 @@ export default async function doHusky(params) {
     const { husky } = pkg;
     if (husky) {
       updateFile('husky.bak', husky, cwd);
-      pkgHooks.push((newPkg) => {
-        delete newPkg.husky;
-      });
+      delete pkg.husky;
     }
-  }
-  else {
-    await installNpmPkg('husky');
   }
 
   // 添加 prepare 脚本
-  pkgHooks.push((newPkg) => {
-    updateObject(newPkg, 'scripts.prepare', (prepare) => {
-      if (prepare) {
-        if (prepare.includes('husky')) {
-          return;
-        }
-        prepare += ' && ';
+  updateObject(pkg, 'scripts.prepare', (prepare) => {
+    if (prepare) {
+      if (prepare.includes('husky')) {
+        return;
       }
-      else {
-        prepare = '';
-      }
-      return `${prepare}husky`;
-    });
+      prepare += ' && ';
+    }
+    else {
+      prepare = '';
+    }
+    return `${prepare}husky`;
   });
 
   await runNpmPkg(['husky']);
+
+  ctx.use(doLintStaged);
+  ctx.use(doCommitlint);
 
   return Promise.all([
     addCommitHook(
@@ -98,10 +110,8 @@ export default async function doHusky(params) {
       cwd,
       '.husky/commit-msg',
       'npx --no-install -- commitlint --edit $1'
-    ),
-    doLintStaged(params),
-    doCommitlint(params)
+    )
   ]).then(() => {
-    record.success('配置 husky 完成.');
+    ctx.done('配置 husky 完成.');
   });
 }

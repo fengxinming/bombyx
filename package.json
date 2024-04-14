@@ -2,17 +2,11 @@
   "name": "bombyx",
   "version": "1.0.3",
   "description": "前端开发环境补充",
-  "main": "./index.mjs",
-  "module": "./index.mjs",
-  "types": "./types/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./types/index.d.ts",
-      "import": "./index.mjs"
-    }
-  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "bombyx": "bin/index.mjs"
+    "bombyx": "./dist/bin.mjs"
   },
   "engines": {
     "node": ">=14.18.0",
@@ -22,10 +16,12 @@
     "deps": "npm run clean && npm i",
     "clean": "rm -rf node_modules",
     "eslint": "eslint --ext .js,.mjs,.jsx --fix --ignore-path .eslintignore ./",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build": "vite build"
   },
   "dependencies": {
     "cac": "^6.7.14",
+    "celia": "^9.0.1",
     "execa": "^7.2.0",
     "figlet": "^1.7.0",
     "kleur": "^4.1.5",
@@ -39,11 +35,14 @@
   "devDependencies": {
     "@commitlint/cli": "^19.2.0",
     "@commitlint/config-conventional": "^19.1.0",
+    "@rollup/plugin-typescript": "^11.1.6",
     "eslint": "^8.57.0",
     "eslint-config-fe": "^2.1.2",
-    "fe": "^2.0.27",
+    "eslint-plugin-simple-import-sort": "^12.1.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.2"
+    "lint-staged": "^15.2.2",
+    "vite": "^5.2.8",
+    "vite-plugin-external": "^4.3.1"
   },
   "files": [
     "bin",

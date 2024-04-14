@@ -1,17 +1,27 @@
 import { join } from 'node:path';
-import { installNpmPkg, rootPath, writeFileFrom } from '../shared/util.mjs';
+
+import { devDeps } from '../shared/constants';
+import Context from '../shared/context';
+import { rootPath, writeFileFrom } from '../shared/util';
 
 /**
  * 配置 commitlint
- * @param {import('../../types').todoOptions} param0
- * @returns {Promise<void>}
  */
-export default async function doCommitlint({ cwd, files, pkg, record }) {
-  const { dependencies = {}, devDependencies = {} } = pkg;
+export default async function doCommitlint(
+  ctx: Context,
+  next: () => void
+): Promise<void> {
+  const {
+    pkg,
+    files,
+    cwd
+  } = ctx;
+
+  const { dependencies = {}, devDependencies = {} } = pkg as Record<string, any>;
   const cliVersion
     = dependencies['@commitlint/cli'] || devDependencies['@commitlint/cli'];
 
-  const pkgs = [];
+  const pkgs: string[] = [];
   // 未安装 @commitlint/cli
   if (!cliVersion) {
     pkgs.push('@commitlint/cli');
@@ -26,14 +36,16 @@ export default async function doCommitlint({ cwd, files, pkg, record }) {
   }
 
   if (pkgs.length) {
-    await installNpmPkg(pkgs);
+    pkgs.forEach((key) => {
+      devDependencies[key] = devDeps[key];
+    });
   }
 
   const configName = 'commitlint.config.js';
 
   if (files.includes(configName)) {
-    record.error(`配置文件 ${configName} 已存在.`);
-    return;
+    ctx.fail(`配置文件 ${configName} 已存在.`);
+    return next();
   }
 
   writeFileFrom(
@@ -41,5 +53,6 @@ export default async function doCommitlint({ cwd, files, pkg, record }) {
     join(rootPath, 'config/husky/commitlint.config.js')
   );
 
-  record.success('配置 commitlint 完成.');
+  ctx.done('配置 commitlint 完成.');
+  next();
 }
