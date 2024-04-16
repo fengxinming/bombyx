@@ -1,6 +1,6 @@
 {
   "name": "bombyx",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "前端开发环境补充",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -45,11 +45,9 @@
     "vite-plugin-external": "^4.3.1"
   },
   "files": [
-    "bin",
-    "src",
     "config",
-    "types",
-    "index.mjs"
+    "dist",
+    "i18n"
   ],
   "keywords": [
     "dev",

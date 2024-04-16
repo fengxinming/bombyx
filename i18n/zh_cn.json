@@ -1,0 +1,13 @@
+{
+  "message.select.functions": "选择需要添加的功能",
+  "message.select.eslint.config": "选择额外的 Eslint 配置",
+  "choice.eslint": "添加 eslint 支持",
+  "choice.husky": "添加 husky、lint-staged、commitlint 支持",
+  "choice.eslint.ts": "适配 typescript 相关",
+  "choice.eslint.react": "适配 react 相关",
+  "hint.multiselect": "使用空格键多选，回车键确认",
+  "log.configuring": "正在配置开发环境",
+  "command.start": "启动命令",
+  "error.cancel.operation": "{figure} 操作被取消",
+  "error.cancel.configuring": "配置开发环境中断"
+}

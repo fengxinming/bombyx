@@ -115,6 +115,8 @@ export default async function doEslint(
   pkgs.forEach((key) => {
     devDependencies[key] = devDeps[key];
   });
+
+  // 生成配置文件
   makeEslintrc(cwd, eslint);
 
   ctx.done('配置 eslint 完成.');

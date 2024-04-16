@@ -9,15 +9,15 @@ import figures from 'prompts/lib/util/figures.js';
 
 import { bombyx } from '../index';
 import { instructions } from '../shared/constants';
+import intl from '../shared/intl';
 import { spinner } from '../shared/spinner';
-import { EslintOptions, Options } from '../typings';
+import { EslintOptions, Options, UserSelection } from '../typings';
 
-const eslintTitle = '添加 eslint 支持';
-const eslintTsTitle = '适配 typescript 相关';
-const eslintReactTitle = '适配 react 相关';
-const huskyTitle = '添加 husky、lint-staged、commitlint 支持';
+function onCancel() {
+  throw new Error(`${intl.get('error.cancel.operation', { figure: kleur.red(figures.cross) })}.`);
+}
 
-async function complete(root: string | undefined, { eslint, husky }: Options) {
+async function complete(root: string | undefined, { lang, eslint, husky }: Options) {
   let cwd = root || void 0;
   if (cwd) {
     if (!isAbsolute(cwd)) {
@@ -33,22 +33,42 @@ async function complete(root: string | undefined, { eslint, husky }: Options) {
     }
   }
 
-  if (eslint === void 0 && husky === void 0) {
-    try {
-      /** @type{{functions: string[], eslintExtra: string[]}} */
-      const selection = await prompts(
+  try {
+    if (lang === void 0) {
+      const langSelection: Record<string, string> = await prompts(
+        {
+          type: 'select',
+          name: 'lang',
+          message: 'Select a language: ',
+          choices: [
+            { title: 'English', value: 'en_us' },
+            { title: '简体中文', value: 'zh_cn' }
+          ],
+          hint: '- Select one of the following languages manually.'
+        },
+        {
+          onCancel
+        }
+      );
+      lang = langSelection.lang;
+    }
+
+    intl.lang = lang;
+
+    if (eslint === void 0 && husky === void 0) {
+      const selection: UserSelection = await prompts(
         [
           {
             type: 'multiselect',
             name: 'functions',
-            instructions: instructions,
-            message: '选择需要添加的功能: ',
+            instructions: lang === 'zh_cn' ? instructions : undefined,
+            message: `${intl.get('message.select.functions')}: `,
             choices: [
-              { title: eslintTitle, value: 'eslint' },
-              { title: huskyTitle, value: 'husky' }
+              { title: intl.get('choice.eslint'), value: 'eslint' },
+              { title: intl.get('choice.husky'), value: 'husky' }
             ],
             min: 1,
-            hint: '- 手动选择以下配置项'
+            hint: `- ${intl.get('hint.multiselect')}`
           },
           {
             type(prev) {
@@ -56,18 +76,16 @@ async function complete(root: string | undefined, { eslint, husky }: Options) {
             },
             name: 'eslintExtra',
             instructions,
-            message: '选择额外的 Eslint 配置: ',
+            message: intl.get('message.select.eslint.config'),
             choices: [
-              { title: eslintTsTitle, value: 'ts' },
-              { title: eslintReactTitle, value: 'react' }
+              { title: intl.get('choice.eslint.ts'), value: 'ts' },
+              { title: intl.get('choice.eslint.react'), value: 'react' }
             ],
-            hint: '- 非必要配置可不选'
+            hint: `- ${intl.get('hint.multiselect')}`
           }
         ],
         {
-          onCancel() {
-            throw new Error(`${kleur.red(figures.cross)} 操作被取消.`);
-          }
+          onCancel
         }
       );
 
@@ -97,13 +115,13 @@ async function complete(root: string | undefined, { eslint, husky }: Options) {
         });
       }
     }
-    catch (cancelled: any) {
-      console.error(cancelled.message);
-      process.exit(1);
-    }
+  }
+  catch (err: any) {
+    console.error(err.message);
+    process.exit(1);
   }
 
-  spinner.start('正在配置开发环境...');
+  spinner.start(`${intl.get('log.configuring')}...`);
 
   const emitter = new EventEmitter();
   emitter.on('log', (type, msg) => {
@@ -126,7 +144,7 @@ async function complete(root: string | undefined, { eslint, husky }: Options) {
     });
   }
   catch (e) {
-    spinner.fail('配置开发环境中断.');
+    spinner.fail(`${intl.get('error.cancel.configuring')}.`);
     throw e;
   }
 }
@@ -136,20 +154,21 @@ async function complete(root: string | undefined, { eslint, husky }: Options) {
  */
 export default function start(cli: CAC) {
   cli
-    .command('[dir]', '配置代码环境.')
+    .command('[dir]', `${intl.get('command.start')}.`)
     .alias('start')
+    .option('--lang', 'Language setting.')
     .option(
       '--eslint',
-      `${eslintTitle}.
-    --eslint.ts      ${eslintTsTitle}.
-    --eslint.react   ${eslintReactTitle}.
+      `${intl.get('choice.eslint')}.
+    --eslint.ts      ${intl.get('choice.eslint.ts')}.
+    --eslint.react   ${intl.get('choice.eslint.react')}.
 `
     )
-    .option('--husky', `${huskyTitle}.`)
+    .option('--husky', `${intl.get('choice.husky')}.`)
     .example((name) => {
       return `
-  $ ${name}                     # 启动选项窗口
-  $ ${name} --eslint            # ${eslintTitle}
+  $ ${name}                     # ${intl.get('command.start')}.
+  $ ${name} --eslint            # ${intl.get('choice.eslint')}.
 `;
     })
     .action(complete);
