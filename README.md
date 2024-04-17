@@ -35,12 +35,14 @@ export interface EslintOptions {
     /** 适配 react 相关 */
     react?: boolean;
 }
+
 export interface HuskyOptions {
     /** 添加 lint-staged 支持 */
     lintStaged: boolean;
     /** 添加 commitlint 支持 */
     commitLint: boolean;
 }
+
 export interface Options {
     /** 当前工作目录 */
     cwd?: string;
@@ -53,6 +55,7 @@ export interface Options {
     /** 指定语言显示 */
     lang?: string;
 }
+
 export interface UserSelection {
     functions: string[];
     eslintExtra: string[];
