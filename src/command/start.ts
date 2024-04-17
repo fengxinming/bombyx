@@ -58,7 +58,7 @@ async function complete(root: string | undefined, { lang, eslint, husky }: Optio
               return prev.includes('eslint') ? 'multiselect' : null;
             },
             name: 'eslintExtra',
-            instructions,
+            instructions: lang === 'zh_cn' ? instructions : undefined,
             message: intl.get('message.select.eslint.config'),
             choices: [
               { title: intl.get('choice.eslint.ts'), value: 'ts' },
