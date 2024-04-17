@@ -1,6 +1,4 @@
 import { EventEmitter } from 'node:events';
-import { existsSync, statSync } from 'node:fs';
-import { isAbsolute, join } from 'node:path';
 
 import { CAC } from 'cac';
 import kleur from 'kleur';
@@ -14,25 +12,10 @@ import { spinner } from '../shared/spinner';
 import { EslintOptions, Options, UserSelection } from '../typings';
 
 function onCancel() {
-  throw new Error(`${intl.get('error.cancel.operation', { figure: kleur.red(figures.cross) })}.`);
+  throw new Error(`${intl.get('error.operation.cancelled', { figure: kleur.red(figures.cross) })}.`);
 }
 
-async function complete(root: string | undefined, { lang, eslint, husky }: Options) {
-  let cwd = root || void 0;
-  if (cwd) {
-    if (!isAbsolute(cwd)) {
-      cwd = join(process.cwd(), cwd);
-    }
-    if (!existsSync(cwd)) {
-      console.error(`${root} 目录不存在.`);
-      process.exit(1);
-    }
-    if (!statSync(cwd).isDirectory()) {
-      console.error(`${root} 不是目录.`);
-      process.exit(1);
-    }
-  }
-
+async function complete(root: string | undefined, { lang, eslint, husky }: Options): Promise<void> {
   try {
     if (lang === void 0) {
       const langSelection: Record<string, string> = await prompts(
@@ -62,7 +45,7 @@ async function complete(root: string | undefined, { lang, eslint, husky }: Optio
             type: 'multiselect',
             name: 'functions',
             instructions: lang === 'zh_cn' ? instructions : undefined,
-            message: `${intl.get('message.select.functions')}: `,
+            message: intl.get('message.select.functions'),
             choices: [
               { title: intl.get('choice.eslint'), value: 'eslint' },
               { title: intl.get('choice.husky'), value: 'husky' }
@@ -81,7 +64,7 @@ async function complete(root: string | undefined, { lang, eslint, husky }: Optio
               { title: intl.get('choice.eslint.ts'), value: 'ts' },
               { title: intl.get('choice.eslint.react'), value: 'react' }
             ],
-            hint: `- ${intl.get('hint.multiselect')}`
+            hint: `- ${intl.get('hint.optional')}`
           }
         ],
         {
@@ -121,7 +104,7 @@ async function complete(root: string | undefined, { lang, eslint, husky }: Optio
     process.exit(1);
   }
 
-  spinner.start(`${intl.get('log.configuring')}...`);
+  spinner.start(intl.get('log.setting'));
 
   const emitter = new EventEmitter();
   emitter.on('log', (type, msg) => {
@@ -137,14 +120,14 @@ async function complete(root: string | undefined, { lang, eslint, husky }: Optio
 
   try {
     await bombyx({
-      cwd,
+      cwd: root,
       eslint,
       husky,
       emitter
     });
   }
   catch (e) {
-    spinner.fail(`${intl.get('error.cancel.configuring')}.`);
+    spinner.fail(intl.get('error.setting.cancelled'));
     throw e;
   }
 }
@@ -154,21 +137,21 @@ async function complete(root: string | undefined, { lang, eslint, husky }: Optio
  */
 export default function start(cli: CAC) {
   cli
-    .command('[dir]', `${intl.get('command.start')}.`)
+    .command('[dir]', `${intl.get('command.start')}`)
     .alias('start')
-    .option('--lang', 'Language setting.')
+    .option('--lang', `${intl.get('option.lang')}`)
     .option(
       '--eslint',
-      `${intl.get('choice.eslint')}.
-    --eslint.ts      ${intl.get('choice.eslint.ts')}.
-    --eslint.react   ${intl.get('choice.eslint.react')}.
+      `${intl.get('choice.eslint')}
+    --eslint.ts      ${intl.get('choice.eslint.ts')}
+    --eslint.react   ${intl.get('choice.eslint.react')}
 `
     )
-    .option('--husky', `${intl.get('choice.husky')}.`)
+    .option('--husky', `${intl.get('choice.husky')}`)
     .example((name) => {
       return `
-  $ ${name}                     # ${intl.get('command.start')}.
-  $ ${name} --eslint            # ${intl.get('choice.eslint')}.
+  $ ${name}                     # ${intl.get('command.start')}
+  $ ${name} --eslint            # ${intl.get('choice.eslint')}
 `;
     })
     .action(complete);

@@ -2,6 +2,7 @@ import { join } from 'node:path';
 
 import { devDeps, eslintConfigFiles } from '../shared/constants';
 import Context from '../shared/context';
+import intl from '../shared/intl';
 import {
   rootPath,
   updateFile,
@@ -90,12 +91,12 @@ export default async function doEslint(
     // 读取 eslintConfig 配置
     const { eslintConfig } = pkg;
     if (eslintConfig) {
-      ctx.fail('在 package.json 中已存在 eslintConfig 配置.');
+      ctx.fail(intl.get('error.config.exists', { config: 'eslintConfig' }));
       return next();
     }
   }
   else {
-    ctx.fail(`配置文件 ${eslintConfigFile} 已存在.`);
+    ctx.fail(intl.get('error.file.exists', { file: eslintConfigFile }));
     return next();
   }
 
@@ -119,6 +120,6 @@ export default async function doEslint(
   // 生成配置文件
   makeEslintrc(cwd, eslint);
 
-  ctx.done('配置 eslint 完成.');
+  ctx.done(intl.get('log.set.done', { name: 'eslint' }));
   next();
 }
