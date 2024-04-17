@@ -1,0 +1,18 @@
+{
+  "message.select.functions": "Select desired functions to add: ",
+  "message.select.eslint.config": "Choose additional Eslint configurations: ",
+  "choice.eslint": "Add eslint support.",
+  "choice.husky": "Add support for husky, lint-staged, and commitlint.",
+  "choice.eslint.ts": "Adapt for TypeScript-related settings.",
+  "choice.eslint.react": "Adapt for React-related settings.",
+  "hint.multiselect": "Use spacebar for multiple selection, enter to confirm.",
+  "hint.optional": "Use spacebar for multiple selection, enter to confirm, or proceed without selection.",
+  "log.setting": "Setting up...",
+  "log.set.done": "Setting {name} completed.",
+  "command.start": "Start command.",
+  "option.lang": "Set the language for displayed content.",
+  "error.file.exists": "File {file} already exists.",
+  "error.config.exists": "{config} configuration already exists in package.json.",
+  "error.operation.cancelled": "Operation {figure} has been cancelled.",
+  "error.setting.aborted": "Setting process aborted due to an exception."
+}

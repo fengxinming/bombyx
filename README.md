@@ -2,30 +2,59 @@
 
 [![npm package](https://nodei.co/npm/bombyx.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/bombyx)
 
-> 前端开发环境补充。
+> Supplementary configuration for front-end development environments.
 
 [![NPM version](https://img.shields.io/npm/v/bombyx.svg?style=flat)](https://npmjs.org/package/bombyx)
 [![NPM Downloads](https://img.shields.io/npm/dm/bombyx.svg?style=flat)](https://npmjs.org/package/bombyx)
 
-## 安装
+## Installation
 
 ```bash
 $ npm install -g bombyx
 ```
 
-## 使用
+## Usage
 
 ```bash
 $ bombyx
                                                       
 
-? 选择需要添加的功能:  › - 手动选择以下配置项 
-› 指示:
-  ↑/↓: 高亮选项
-  ←/→/[空格键]: 切换选择
-  a键: 选中所有
-  回车键: 提交选项
+? Select a language:  › - Select one of the following languages manually.
+❯   English
+    简体中文
+```
 
-◯   添加 eslint 支持
-◯   添加 husky、lint-staged、commitlint 支持
+## Declaration
+
+```ts
+export declare function bombyx(opts: Options): Promise<void>;
+
+export interface EslintOptions {
+    /** 适配 typescript 相关 */
+    ts?: boolean;
+    /** 适配 react 相关 */
+    react?: boolean;
+}
+export interface HuskyOptions {
+    /** 添加 lint-staged 支持 */
+    lintStaged: boolean;
+    /** 添加 commitlint 支持 */
+    commitLint: boolean;
+}
+export interface Options {
+    /** 当前工作目录 */
+    cwd?: string;
+    /** 配置eslint */
+    eslint?: boolean | EslintOptions;
+    /** 配置husky */
+    husky?: boolean | HuskyOptions;
+    /** 自定义事件触发 */
+    emitter: EventEmitter;
+    /** 指定语言显示 */
+    lang?: string;
+}
+export interface UserSelection {
+    functions: string[];
+    eslintExtra: string[];
+}
 ```
