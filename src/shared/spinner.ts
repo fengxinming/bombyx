@@ -9,7 +9,7 @@ export class Spinner {
     this._lastMsg = null;
   }
 
-  start(msg) {
+  start(msg: string) {
     const { spinner, _lastMsg } = this;
     if (_lastMsg) {
       spinner.stopAndPersist({
@@ -21,7 +21,7 @@ export class Spinner {
     spinner.start();
   }
 
-  stop(persist) {
+  stop(persist?: boolean) {
     const { spinner, _lastMsg } = this;
     if (_lastMsg && persist !== false) {
       spinner.stopAndPersist({

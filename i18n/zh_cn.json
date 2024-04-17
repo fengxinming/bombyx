@@ -9,6 +9,7 @@
   "hint.optional": "使用空格键多选，回车键确认，不选择则直接确认.",
   "log.setting": "正在设置中...",
   "log.set.done": "设置 {name} 完成.",
+  "log.install": "运行 \"npm install\" 后安装依赖.",
   "command.start": "启动命令.",
   "option.lang": "设置显示内容的语言.",
   "error.file.exists": "文件 {file} 已存在.",

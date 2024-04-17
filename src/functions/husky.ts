@@ -203,4 +203,5 @@ export default async function doHusky(
   doCommitLint(ctx);
 
   ctx.done(intl.get('log.set.done', { name: 'husky' }));
+  next();
 }
