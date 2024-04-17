@@ -30,7 +30,7 @@ class Intl {
   get(key: string, replacements?: Record<string, string> | any[]) {
     let text = this._messages[key];
     if (replacements) {
-      text = text.replace(/\{\s*(w+)\s*\}/g, (_, key) => {
+      text = text.replace(/\{\s*(\w+)\s*\}/g, (_, key) => {
         return replacements[key];
       });
     }
