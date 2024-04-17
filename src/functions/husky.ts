@@ -79,7 +79,7 @@ function doCommitLint(
   const configName = 'commitlint.config.js';
 
   if (files.includes(configName)) {
-    ctx.fail(`配置文件 ${configName} 已存在.`);
+    ctx.fail(intl.get('error.file.exists', { file: configName }));
     return;
   }
 
