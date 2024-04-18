@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 
+import boxen from 'boxen';
 import { CAC } from 'cac';
 import kleur from 'kleur';
 import prompts from 'prompts';
@@ -130,6 +131,9 @@ async function complete(root: string | undefined, { lang, eslint, husky }: Optio
     spinner.fail(intl.get('error.setting.cancelled'));
     throw e;
   }
+
+  // eslint-disable-next-line no-console
+  console.log(boxen('Run "npm install" to install dependencies.', { padding: 1 }));
 }
 
 /**
