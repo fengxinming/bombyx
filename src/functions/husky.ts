@@ -51,7 +51,16 @@ function doCommitLint(
     cwd
   } = ctx;
 
-  const { dependencies = {}, devDependencies = {} } = pkg as Record<string, any>;
+  let { dependencies, devDependencies } = pkg as Record<string, any>;
+  if (!dependencies) {
+    dependencies = {};
+    pkg.dependencies = dependencies;
+  }
+  if (!devDependencies) {
+    devDependencies = {};
+    pkg.devDependencies = devDependencies;
+  }
+
   const cliVersion
     = dependencies['@commitlint/cli'] || devDependencies['@commitlint/cli'];
 

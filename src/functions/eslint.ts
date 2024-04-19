@@ -60,7 +60,16 @@ export default async function doEslint(
     eslint = {};
   }
 
-  const { dependencies = {}, devDependencies = {} } = pkg as Record<string, any>;
+  let { dependencies, devDependencies } = pkg as Record<string, any>;
+  if (!dependencies) {
+    dependencies = {};
+    pkg.dependencies = dependencies;
+  }
+  if (!devDependencies) {
+    devDependencies = {};
+    pkg.devDependencies = devDependencies;
+  }
+
   const eslintVersion = dependencies.eslint || devDependencies.eslint;
 
   // 未安装 eslint
