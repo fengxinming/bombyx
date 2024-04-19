@@ -4,6 +4,7 @@ import { isAbsolute, join } from 'node:path';
 import doEslint from './functions/eslint';
 import doHusky from './functions/husky';
 import Context from './shared/context';
+import { updateFile } from './shared/util';
 import { Options } from './typings';
 
 /**
@@ -30,7 +31,9 @@ export function bombyx(opts: Options): Promise<void> {
   const ctx = new Context(opts);
   ctx.use(doEslint);
   ctx.use(doHusky);
-  return ctx.run();
+  return ctx.run().then(() => {
+    updateFile(ctx.pkgPath, ctx.pkg);
+  });
 }
 
 export * from './typings';
