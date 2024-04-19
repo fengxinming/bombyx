@@ -133,7 +133,7 @@ async function complete(root: string | undefined, { lang, eslint, husky }: Optio
   }
 
   // eslint-disable-next-line no-console
-  console.log(boxen('Run "npm install" to install dependencies.', { padding: 1 }));
+  console.log(boxen(intl.get('log.install'), { padding: 1 }));
 }
 
 /**
