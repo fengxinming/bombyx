@@ -27,6 +27,16 @@ export const rootPath = join(__dirname, '..');
 // }
 
 /**
+ * 安装npm包
+ */
+export function installNpmPkg(pkgs: string|string[], args?: string|string[]) {
+  if (!args) {
+    args = '--save-dev';
+  }
+  return execa('npm', ['install'].concat(args).concat(pkgs));
+}
+
+/**
  * 执行npm模块
  */
 export function runNpmPkg(args: string|string[], install?: boolean) {

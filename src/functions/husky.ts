@@ -2,8 +2,7 @@ import { existsSync } from 'node:fs';
 import { appendFile, readFile, unlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { devDeps, huskyConfigFiles, lintstagedConfigFiles } from 'src/shared/constants.js';
-
+import { devDeps, huskyConfigFiles, lintstagedConfigFiles } from '../shared/constants';
 import Context from '../shared/context';
 import intl from '../shared/intl';
 import {
@@ -197,7 +196,7 @@ export default async function doHusky(
     return `${prepare}husky`;
   });
 
-  await runNpmPkg(['husky']);
+  await runNpmPkg([`husky@${devDependencies.husky.match(/\d/)[0]}`], !existsSync(join(cwd, 'node_modules', 'husky')));
 
   doLintStaged(ctx);
   doCommitLint(ctx);
