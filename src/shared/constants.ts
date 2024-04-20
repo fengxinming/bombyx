@@ -7,6 +7,7 @@ export const devDeps = {
   'eslint-config-fe': '^2.1.2',
   'eslint-plugin-react': '^7.34.1',
   'eslint-plugin-react-hooks': '^4.6.0',
+  'eslint-plugin-simple-import-sort': '^12.1.0',
   '@babel/preset-react': '^7.24.1',
   husky: '^9.0.11',
   'lint-staged': '^15.2.2',
